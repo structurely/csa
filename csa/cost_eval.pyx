@@ -19,6 +19,7 @@ def csa_eval_cost(np.ndarray solution, int dimension, int functionNumber):
     Evaluate the current cost function.
     """
     cdef DTYPE_t e
+
     if functionNumber == 1998:
         e = 0
         for i in range(dimension):
