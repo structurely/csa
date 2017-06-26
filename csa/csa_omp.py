@@ -55,43 +55,76 @@ def CSA_EvalCost(solution, dimension, functionNumber):
         e = -20 * math.exp(-0.2 * math.sqrt(tmpvar1 / dimension)) - math.exp(tmpvar2 / dimension) + 20 + math.exp(1)
         break
 
-    elif functionNumber == 2004: # Griewanks' function
-        # TODO
-        pass
-    elif functionNumber == 2005:
-        # TODO
-        pass
-    elif functionNumber == 2006:
-        # TODO
-        pass
-    elif functionNumber == 2007:
-        # TODO
-        pass
-    elif functionNumber == 2008:
-        # TODO
-        pass
+    elif functionNumber == 2004:  # Griewanks' function
+        solutionScale = 600
+        tmpvar1 = 0
+        for i in range(dimension):
+            tmpvar1 += math.pow(solutionScale * solution[i], 2)
+        tmpvar2 = 1
+        for i in range(dimension):
+            tmpvar2 *= math.cos(solutionScale * solution[i] / sqrt(i + 1))
+        e = tmpvar1 / 4000 - tmpvar2 + 1
+        break
+
+    elif functionNumber == 2005:  # Weiersstrass function
+        solutionScale = 0.5
+        a = 0.5
+        b = 3
+        kmax = 20
+        e = 0
+        for i in range(dimension):
+            tmpvar1 = 0
+            for k in range(kmax + 1):
+                tmpvar1 += math.pow(a, k) * math.cos(2.0 * PI * math.pow(b, k) * (solutionScale * solution[i] + 0.5))
+            e += tmpvar1
+        tmpvar1 = 0
+        for k in range(kmax + 1):
+            tmpvar1 += math.pow(a, k) * math.cos(2 * PI * pow(b, k) * 0.5)
+        e -= (dimension) * tmpvar1
+        break
+
+    elif functionNumber == 2006:  # Rastrin's function
+        solutionScale = 5.12
+        e = 0
+        for i in range(dimension):
+            e += math.pow(solutionScale * solution[i], 2) - 10 * math.cos(2 * PI * solutionScale * solution[i]) + 10
+        break
+    elif functionNumber == 2007:  # Noncontinuous Rastrin's function
+        solutionScale = 5.12
+        e = 0
+        for i in range(dimension):
+            y = (solutionScale * solution[i] if math.fabs(solutionScale * solution[i]) < 0.5 else round(2 * solutionScale * solution[i]) / 2)
+        break
+    elif functionNumber == 2008:  # Schwefel's function
+        solutionScale = 500
+        tmpvar1 = 0
+        for i in range(dimension):
+            tmpvar1 += solutionScale * solution[i] * math.sin(math.sqrt(math.fabs(solutionScale * solution[i])))
+        e = - tmpvar1 + 419 * dimension
+        break
     elif functionNumber == 2015:
-        # TODO
-        pass
+        solutionScale = 500
+        break
     elif functionNumber == 2016:
+        solutionScale = 500
+        break
+    # Functions from the paper: Sample-sort simulated annenaling, in IEEE TSMC-B
+    elif functionNumber == 3001: # Function Branin
         # TODO
         pass
-    elif functionNumber == 3001:
+    elif functionNumber == 3002: # Function GoldPrice
         # TODO
         pass
-    elif functionNumber == 3002:
+    elif functionNumber == 3008: # Function Griewank2
         # TODO
         pass
-    elif functionNumber == 3008:
+    elif functionNumber == 4000: # Multiobjective function example
         # TODO
         pass
-    elif functionNumber == 4000:
+    elif functionNumber == 4001: # Multiobjective function SCH from NSGA-II
         # TODO
         pass
-    elif functionNumber == 4001:
-        # TODO
-        pass
-    elif functionNumber == 4002:
+    elif functionNumber == 4002: # Multiobjective function FON  from NSGA-II
         # TODO
         pass
     else:
