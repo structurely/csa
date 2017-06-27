@@ -10,11 +10,11 @@ create-branch:
 	git push --set-upstream origin CSA-$(num)
 
 delete-branch:
-	git push origin --delete BRN-$(num)
-	git branch -d BRN-$(num)
+	git push origin --delete CSA-$(num)
+	git branch -d CSA-$(num)
 
 force-delete:
-	git push origin --delete BRN-$(num)
-	git branch -D BRN-$(num)
+	git push origin --delete CSA-$(num)
+	git branch -D CSA-$(num)
 
 .PHONY: clean build create-branch delete-branch force-delete
