@@ -4,21 +4,32 @@ from __future__ import print_function
 
 import numpy as np
 cimport numpy as np
+cimport cython
 
 
 DTYPE = np.float
 ctypedef np.float_t DTYPE_t
 
-PI = np.pi
-UPPER_BOUNDBOX = 2 * PI
-LOWER_BOUNDBOX = 0
+cdef DTYPE_t PI = np.pi
+cdef DTYPE_t UPPER_BOUNDBOX = 2 * PI
+cdef DTYPE_t LOWER_BOUNDBOX = 0
 
 
-def csa_eval_cost(np.ndarray solution, int dimension, int functionNumber):
+#  @cython.boundscheck(False) # turn off bounds-checking for entire function
+#  @cython.wraparound(False)  # turn off negative index wrapping for entire function
+def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int functionNumber):
     """
     Evaluate the current cost function.
     """
     cdef DTYPE_t e
+    cdef DTYPE_t tmpvar1
+    cdef DTYPE_t tmpvar2
+    cdef DTYPE_t solutionScale
+    cdef DTYPE_t par1
+    cdef DTYPE_t par2
+    cdef DTYPE_t parNorm
+    cdef int kmax
+    cdef int i
 
     if functionNumber == 1998:
         e = 0
