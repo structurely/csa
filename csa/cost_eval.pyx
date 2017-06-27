@@ -17,7 +17,7 @@ cdef DTYPE_t LOWER_BOUNDBOX = 0
 
 #  @cython.boundscheck(False) # turn off bounds-checking for entire function
 #  @cython.wraparound(False)  # turn off negative index wrapping for entire function
-def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int functionNumber):
+def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int functionNumber):
     """
     Evaluate the current cost function.
     """
@@ -28,6 +28,7 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
     cdef DTYPE_t par1
     cdef DTYPE_t par2
     cdef DTYPE_t parNorm
+    cdef int dimension = solution.shape[0]
     cdef int kmax
     cdef int i
 
@@ -35,12 +36,14 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         e = 0
         for i in range(dimension):
             e += solution[i]
+
     #  elif functionNumber == 1999:
         #  e = 0
         #  for i in range(dimension - 1):
             #  xx = solution[i]
             #  yx = solution[i + 1]  # check if correct
             #  e = sin(math.sqrt(xx ** 2 + yx ** 2)) / math.sqrt(xx ** 2 + yx ** 2)
+
     elif functionNumber == 2000:  # sin(0)+cos(1)+sin(2)+cos(3)+..
         e = 0
         for i in range(dimension):
@@ -71,7 +74,6 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
             tmpvar2 += np.cos(2.0 * PI * solutionScale * solution[i])
         e = -20 * np.exp(-0.2 * np.sqrt(tmpvar1 / dimension)) - np.exp(tmpvar2 / dimension) + 20 + np.exp(1)
 
-
     elif functionNumber == 2004:  # Griewanks' function
         solutionScale = 600
         tmpvar1 = 0
@@ -81,7 +83,6 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         for i in range(dimension):
             tmpvar2 *= np.cos(solutionScale * solution[i] / np.sqrt(i + 1))
         e = tmpvar1 / 4000 - tmpvar2 + 1
-
 
     elif functionNumber == 2005:  # Weiersstrass function
         solutionScale = 0.5
@@ -98,7 +99,6 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         for k in range(kmax + 1):
             tmpvar1 += (a ** k) * np.cos(2 * PI * (b ** k) * 0.5)
         e -= (dimension) * tmpvar1
-
 
     elif functionNumber == 2006:  # Rastrin's function
         solutionScale = 5.12
@@ -119,11 +119,11 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
             tmpvar1 += solutionScale * solution[i] * np.sin(np.sqrt(np.abs(solutionScale * solution[i])))
         e = - tmpvar1 + 419 * dimension
 
-    elif functionNumber == 2015:
-        solutionScale = 500
+    #  elif functionNumber == 2015:
+        #  solutionScale = 500
 
-    elif functionNumber == 2016:
-        solutionScale = 500
+    #  elif functionNumber == 2016:
+        #  solutionScale = 500
 
     # Functions from the paper: Sample-sort simulated annenaling, in IEEE TSMC-B
     elif functionNumber == 3001: # Function Branin
@@ -131,13 +131,13 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         x2 = 7.5 * solution[1] + 7.5
         e = (x2-(5.1/(4*PI*PI))*x1*x1+(5/PI)*x1-6) ** 2 + 10*(1-(1/(8*PI))) * np.cos(x1)+10
 
-    elif functionNumber == 3002: # Function GoldPrice
+    elif functionNumber == 3002:  # Function GoldPrice
         x1 = 2 * solution[0]
         x2 = 2 * solution[1]
         e = (1.0 + (x1+x2+1.0) ** 2 * (19.0 - 14.0*x1 + 3.0*x1*x1 -14.0*x2 + 6.0*x1*x2 +3.0*x2*x2)) * (30.0+(2.0*x1-3.0*x2) ** 2) \
             * (18.0 -32.0*x1 +12.0*x1*x1 +48.0*x2 -36.0*x1*x2 +27.0*x2*x2)
 
-    elif functionNumber == 3008: # Function Griewank2
+    elif functionNumber == 3008:  # Function Griewank2
         solutionScale = 100
         tmpvar1 = 0
         for i in range(2):
@@ -147,7 +147,7 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
             tmpvar2 *= np.cos(solutionScale*solution[i]/np.sqrt(i+1))
         e = tmpvar1/200 - tmpvar2 +1;
 
-    elif functionNumber == 4000: # Multiobjective function example
+    elif functionNumber == 4000:  # Multiobjective function example
         cost1 = csa_eval_cost(solution, dimension-2,2001)
         for i in range(dimension-2):
             solution[i] += 0.5
@@ -161,7 +161,7 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         par2 /= parNorm
         e =  par1*cost1 + par2*cost2
 
-    elif functionNumber == 4001: # Multiobjective function SCH from NSGA-II
+    elif functionNumber == 4001:  # Multiobjective function SCH from NSGA-II
         solutionScale = 1000
         cost1 = (solutionScale*solution[0]) ** 2
         cost2 = (solutionScale*solution[0]-2) ** 2
@@ -172,7 +172,7 @@ def csa_eval_cost(np.ndarray[DTYPE_t, ndim=1] solution, int dimension, int funct
         par2 /= parNorm
         e =  par1*cost1 + par2*cost2
 
-    elif functionNumber == 4002: # Multiobjective function FON  from NSGA-II
+    elif functionNumber == 4002:  # Multiobjective function FON  from NSGA-II
         solutionScale = 4
         cost1 = cost2 = 0
         for i in range(3):
