@@ -12,6 +12,25 @@ except NameError:
     xrange = range
 
 
+def worker_probe(annealer, i):
+    state = annealer.current_states[i]
+    probe = annealer.probe_function(state)
+    energy = annealer.target_function(probe)
+    return i, energy, probe
+    #  annealer.queue.put((i, energy, probe))
+
+
+def listener(annealer):
+    while True:
+        res = annealer.queue.get()
+        if res == '__kill__':
+            break
+        i, energy, probe = res
+        annealer.probe_energies[i] = energy
+        annealer.probe_states[i] = probe
+        print(annealer.probe_energies)
+
+
 class CoupledAnnealer(object):
 
     def __init__(self, target_function, probe_function,
@@ -30,6 +49,7 @@ class CoupledAnnealer(object):
         self.probe_function = probe_function
         self.initial_state = initial_state
         self.initial_states = initial_states
+        self.steps = steps
         self.n_probes = n_probes
         self.processes = processes if processes > 0 else mp.cpu_count()
         self.update_interval = update_interval
@@ -60,41 +80,24 @@ class CoupledAnnealer(object):
         manager = mp.Manager()
         self.queue = manager.Queue()
 
-    def worker_probe(self, i):
-        state = self.current_states[i]
-        probe = self.probe_function(state)
-        energy = self.target_function(probe)
-        self.queue.put((i, energy, probe))
-
-    def listener(self):
-        while True:
-            res = self.queue.get()
-            if res == '__kill__':
-                break
-            i, energy, probe = res
-            self.probe_energies[i] = energy
-            self.probe_states[i] = probe
-
     def update_state(self):
         # Set up the mp pool.
         pool = mp.Pool(processes=self.processes)
 
         # Put the listener to work first.
-        watcher = pool.apply_async(listener, args=())
+        #  watcher = pool.apply_async(listener, args=(self,))
 
         # Now put the workers to work.
-        jobs = []
+        results = []
         for i in xrange(self.n_probes):
-            job = pool.apply_async(self.worker_probe, args=(i,))
-            jobs.append(job)
-
-        # Collect the results from the current iteration through the pool queue.
-        for job in jobs:
-            job.get()
-
-        # Done. Kill the listener.
-        queue.put('__kill__')
+            pool.apply_async(worker_probe, args=(self, i,), callback=lambda x: results.append(x))
         pool.close()
+        pool.join()
+
+        for res in results:
+            i, energy, probe = res
+            self.probe_energies[i] = energy
+            self.probe_states[i] = probe
 
     def step(self, k):
         cool = True if k % self.update_interval == 0 else False
@@ -130,14 +133,17 @@ class CoupledAnnealer(object):
             # Update generation temp.
             self.tgen = self.tgen * self.tgen_schedule
             # Update acceptance temp.
-            sigma2 = (self.n_probe * sum(exp_terms2) / (gamma ** 2) - 1) 
+            sigma2 = (self.n_probes * sum(exp_terms2) / (gamma ** 2) - 1) 
             sigma2 = sigma2 / (self.n_probes ** 2)
-            if sigma < self.desired_variance:
+            if sigma2 < self.desired_variance:
                 self.tacc *= self.tacc_schedule
             else:
                 self.tacc *= (2 - self.tacc_schedule)
 
     def anneal(self):
+        self.update_state()
+        self.current_energies = self.probe_energies[:]
         for k in xrange(1, self.steps + 1):
             self.update_state()
             self.step(k)
+            print(min(self.current_energies))
