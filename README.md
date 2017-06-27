@@ -15,11 +15,12 @@ That is, `energy_func` represents the "energy" of the current solution set `x_1,
 - `generation_schedule(tgen, iteration)` is a function which takes `tgen` (the generation "temperature") and the 
 number of 
 the current iteration as input. The `generation_schedule` function determines how much `tgen` is
-decreased at each iteration.
+decreased at each iteration. A typical choice for `generation_schedule` is just to multiply the current value 
+of `tgen` by 0.9999.
 - `default_tgen` is the initial value given to `tgen`.
 - `acceptance_schedule(tac, iteration)` is a function which takes `tac` (the acceptance "temperature") and the number
 of the current iteration as input. This function determines how much `tac` will be decreased at each
-iteration.
+iteration. A typical choice for `acceptance_schedule` is just to multiply `tac` by 0.99.
 - `default_tac` is the initial value given to `tac`.
 - `random_probe(i, tgen)` is a function which produces a random value for each `x_i` according to
 some distribution which depends on `tgen`.
