@@ -1,11 +1,20 @@
 # Coupled simulated annealing
 
+The original paper describing Coupled Simulated Annealing (CSA) can be found here:
+
+ftp://ftp.esat.kuleuven.be/sista/sdesouza/papers/CSA2009accepted.pdf
+
+
+## Description
+
 Suppose we are trying optimize (meaning minimize, in this case) some function 
 `my_function()` which takes a vector of floats `x` as input
 and outputs a float.
 
 We are going to run `m` processes in parallel. Therefore `x_i` will denote the current solution
 for the `m`th process.
+
+### Definitions
 
 Before describing the algorithm, we will need to define the following functions and parameters:
 
@@ -32,8 +41,7 @@ and 1.
 > NOTE: The choices for `energy_func()`, `generation_schedule()`, `acceptance_schedule()`,
 and `random_probe()` are what distinguish the particular classes of CSA algorithms.
 
-
-The algorithm:
+### The algorithm
 
 1. **Initialization** 
   - Assign random initial solutions to `x_1`, ..., `x_m`.
