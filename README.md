@@ -4,11 +4,48 @@ The original paper describing Coupled Simulated Annealing (CSA) can be found her
 
 ftp://ftp.esat.kuleuven.be/sista/sdesouza/papers/CSA2009accepted.pdf
 
+Essentially, CSA is like multiple simulated annealing (i.e. `m` independent SA processes run in parallel),
+except that the acceptance probability at each step is calculated as a function of the current state
+across *all* `m` processes. For a more complete description of the general CSA algorithm, see 
+[Description of CSA](#description-of-csa) below.
 
-## Description
+## Installation
+
+Using `pip`:
+
+```
+pip install pycsa
+```
+
+Directly from `GitHub`:
+
+```
+pip install -e git+https://github.com/structurely/csa.git
+```
+
+## Usage
+
+See [examples/travelling_salesman.ipynb](https://github.com/structurely/csa/blob/master/examples/travelling_salesman.ipynb) for an example of CSA applied to the [travelling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP).
+
+## Contributing
+
+Feel free to submit pull requests and issues.
+
+## License
+
+See [LICENSE.txt](https://github.com/structurely/csa/blob/master/LICENSE.txt).
+
+## Related
+
+- [perrygeo/simanneal](https://github.com/perrygeo/simanneal): a Python implementation of (single) simulated 
+annealing.
+- [docs.scipy.org](https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.optimize.anneal.html):
+the SciPy implementation of simulated annealing.
+
+## Description of CSA
 
 Suppose we are trying optimize (meaning minimize, in this case) some function 
-`my_function()` which takes a vector of floats `x` as input
+`my_function()` which takes `x` as input
 and outputs a float.
 
 We are going to run `m` processes in parallel. Therefore `x_i` will denote the current solution

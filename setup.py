@@ -1,4 +1,9 @@
-from distutils.core import setup, Extension
+from distutils.core import Extension
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils import setup
+    
 #  from Cython.Build import cythonize
 
 
