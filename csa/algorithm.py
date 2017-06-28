@@ -5,6 +5,9 @@ from __future__ import print_function
 import math
 import multiprocessing as mp
 import random
+import pyximport
+pyximport.install()
+from .optimize import *
 
 try:
     xrange
@@ -40,10 +43,10 @@ class CoupledAnnealer(object):
                  update_interval=5,
                  tgen_initial=0.01,
                  tgen_schedule=0.99999,
-                 tacc_initial=0.9, 
+                 tacc_initial=0.9,
                  tacc_schedule=0.99,
                  desired_variance=None,
-                 n_probes=10, 
+                 n_probes=10,
                  processes=-1):
         self.target_function = target_function
         self.probe_function = probe_function
@@ -57,7 +60,7 @@ class CoupledAnnealer(object):
         self.tacc = tacc_initial
         self.tgen_schedule = tgen_schedule
         self.tacc_schedule = tacc_schedule
-        
+
         # Set desired_variance.
         if desired_variance is None:
             desired_variance = 0.99 * (n_probes - 1) / (n_probes ** 2)
@@ -108,32 +111,33 @@ class CoupledAnnealer(object):
         if cool:
             exp_terms2 = []
 
-        for i in xrange(self.n_probes):
-            E = self.current_energies[i]
-            exp_terms.append(math.exp((E - max_energy) / self.tacc))
-            # No need to calculate this if we are not cooling this step.
-            if cool:
-                exp_terms2.append(math.exp(2.0 * (E - max_energy) / self.tacc))
+        # for i in xrange(self.n_probes):
+        #     E = self.current_energies[i]
+        #     exp_terms.append(math.exp((E - max_energy) / self.tacc))
+        #     # No need to calculate this if we are not cooling this step.
+        #     if cool:
+        #         exp_terms2.append(math.exp(2.0 * (E - max_energy) / self.tacc))
+        exp_terms, exp_terms2 = calculate_exp(self.n_probes, self.current_energies, cool, self.tacc, max_energy)
 
         gamma = sum(exp_terms)
         prob_accept = [x / gamma for x in exp_terms]
 
         # Determine whether to accept or reject probe.
-        for i in xrange(self.n_probes):
-            state_energy = self.current_energies[i]
-            probe_energy = self.probe_energies[i]
-            probe = self.probe_states[i]
-            p = prob_accept[i]
-            if (probe_energy < state_energy) or (random.uniform(0, 1) < p):
-                self.current_energies[i] = probe_energy
-                self.current_states[i] = probe
-
+        # for i in xrange(self.n_probes):
+        #     state_energy = self.current_energies[i]
+        #     probe_energy = self.probe_energies[i]
+        #     probe = self.probe_states[i]
+        #     p = prob_accept[i]
+        #     if (probe_energy < state_energy) or (random.uniform(0, 1) < p):
+        #         self.current_energies[i] = probe_energy
+        #         self.current_states[i] = probe
+        current_energies, current_states = accept_probe(self.n_probes, self.current_energies, self.probe_energies, self.probe_states, prob_accept)
         # Update temperatures according to schedule.
         if cool:
             # Update generation temp.
             self.tgen = self.tgen * self.tgen_schedule
             # Update acceptance temp.
-            sigma2 = (self.n_probes * sum(exp_terms2) / (gamma ** 2) - 1) 
+            sigma2 = (self.n_probes * sum(exp_terms2) / (gamma ** 2) - 1)
             sigma2 = sigma2 / (self.n_probes ** 2)
             if sigma2 < self.desired_variance:
                 self.tacc *= self.tacc_schedule
