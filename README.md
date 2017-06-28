@@ -1,6 +1,6 @@
 # Coupled simulated annealing
 
-[![Build Status](https://travis-ci.org/structurely/csa.svg?branch=master)](https://travis-ci.org/structurely/csa)
+[![Build Status](https://travis-ci.org/structurely/csa.svg?branch=dev)](https://travis-ci.org/structurely/csa)
 
 The original paper describing Coupled Simulated Annealing (CSA) can be found here:
 

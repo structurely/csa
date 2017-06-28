@@ -1,3 +1,5 @@
+status=dev
+
 build:
 	python setup.py build_ext --inplace
 
@@ -16,5 +18,8 @@ delete-branch:
 force-delete:
 	git push origin --delete CSA-$(num)
 	git branch -D CSA-$(num)
+
+update-tag:
+	git push --tags origin $(status)
 
 .PHONY: clean build create-branch delete-branch force-delete
