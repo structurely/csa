@@ -25,7 +25,7 @@ pip install -e git+https://github.com/structurely/csa.git
 
 ## Usage
 
-See [examples/travelling_salesman.ipynb](https://github.com/structurely/csa/blob/master/examples/travelling_salesman.ipynb) for an example of CSA applied to the [travelling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP).
+See [examples/travelling_salesman.ipynb](https://github.com/structurely/csa/blob/master/examples/travelling_salesman.ipynb) for an example of CSA applied to the [travelling salesman problem (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem).
 
 ## Contributing
 
