@@ -4,7 +4,7 @@
 # Orig Author:   Evan Pete Walsh
 # Contact:       epwalsh@structurely.com
 # Creation Date: 2017-06-27
-# Last Modified: 2017-06-27 18:50:06
+# Last Modified: 2017-06-28 11:18:20
 # =============================================================================
 
 """
@@ -76,7 +76,7 @@ for ka, va in cities.items():
             distance_matrix[ka][kb] = distance(va, vb)
 
 
-def probe(positions):
+def probe(positions, tgen):
     """
     Swap two cities in the route.
     """
@@ -96,9 +96,15 @@ def target(positions):
     return e
 
 
+n_annealers = 10
+
 annealer = CoupledAnnealer(target, probe, 
-                           initial_state=init_state,
-                           steps=100)
+                           initial_state=[init_state] * n_annealers,
+                           steps=100,
+                           processes=4,
+                           n_annealers=n_annealers,
+                           tacc_initial=1000.0,
+                           verbose=True)
 annealer.anneal()
 
 energies = annealer.current_energies
@@ -110,6 +116,7 @@ energy = energies[best]
 while state[0] != 'New York City':
     state = state[1:] + state[:1]
 
+print()
 print("%i mile route:" % energy)
 for city in state:
     print("\t", city)
