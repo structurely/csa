@@ -2,7 +2,6 @@ Coupled simulated annealing
 ===========================
 
 |Build Status|
-
 |PyPI|
 
 The original paper describing Coupled Simulated Annealing (CSA) can be
