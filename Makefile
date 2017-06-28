@@ -10,6 +10,7 @@ clean:
 	find . | grep -E "(__pycache__|\.pyc|\.o|\.so|\.pyo$$)" | xargs rm -rf
 	rm -rf build/
 	rm -rf dist/
+	rm -rf pycsa.egg-info/
 
 .PHONY: create-branch
 create-branch:
