@@ -35,7 +35,7 @@ Usage
 -----
 
 See
-`examples/travelling\_salesman.ipynb <https://github.com/structurely/csa/blob/master/examples/travelling_salesman.ipynb>`__
+`examples/travelling\_salesman.ipynb <https://github.com/structurely/csa/blob/dev/examples/travelling_salesman.ipynb>`__
 for an example of CSA applied to the `travelling salesman problem
 (TSP) <https://en.wikipedia.org/wiki/Travelling_salesman_problem>`__.
 
@@ -48,7 +48,7 @@ License
 -------
 
 See
-`LICENSE.txt <https://github.com/structurely/csa/blob/master/LICENSE.txt>`__.
+`LICENSE.txt <https://github.com/structurely/csa/blob/dev/LICENSE.txt>`__.
 
 Related
 -------

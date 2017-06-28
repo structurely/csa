@@ -1,12 +1,8 @@
-from distutils.core import Extension
 try:
     from setuptools import setup
 except ImportError:
-    from distutils import setup
+    from distutils.core import setup
     
-#  from Cython.Build import cythonize
-
-
 setup(
     name="pycsa",
     version="0.1.2",
@@ -17,8 +13,6 @@ setup(
     url="https://github.com/structurely/csa",
     packages=["pycsa"],
     package_dir={"pycsa": "csa"},
-    #  ext_modules = cythonize("csa/cost_eval.pyx"),
-    #  include_dirs=[],
     keywords=[
         "csa",
         "sa",
