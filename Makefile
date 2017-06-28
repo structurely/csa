@@ -19,7 +19,10 @@ force-delete:
 	git push origin --delete CSA-$(num)
 	git branch -D CSA-$(num)
 
-update-tag:
-	git push --tags origin $(status)
+pypi-upload:
+	python setup.py sdist upload -r pypi
 
-.PHONY: clean build create-branch delete-branch force-delete
+test-pypi-upload:
+	python setup.py sdist upload -r pypitest
+
+.PHONY: clean build create-branch delete-branch force-delete pypi-upload test-pypi-upload

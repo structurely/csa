@@ -24,7 +24,6 @@ setup(
     author="Boudhayan Banerjee, Evan 'Pete' Walsh",
     author_email="ronnie@structurely.com, epwalsh@structurely.com",
     url="https://github.com/structurely/csa",
-    download_url="https://github.com/structurely/csa/archive/0.1.tar.gz",
     packages=["pycsa"],
     package_dir={"pycsa": "csa"},
     #  ext_modules = cythonize("csa/cost_eval.pyx"),
