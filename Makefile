@@ -20,9 +20,7 @@ force-delete:
 	git branch -D CSA-$(num)
 
 pypi-upload:
-	python setup.py sdist upload -r pypi
+	python setup.py bdist_wheel
+	twine upload dist/*
 
-test-pypi-upload:
-	python setup.py sdist upload -r pypitest
-
-.PHONY: clean build create-branch delete-branch force-delete pypi-upload test-pypi-upload
+.PHONY: clean build create-branch delete-branch force-delete pypi-upload

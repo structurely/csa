@@ -17,7 +17,7 @@ is calculated as a function of the current state across all m processes.
 """
 
 setup(
-    name="csa",
+    name="pycsa",
     version="0.1",
     description="Python implementation of coupled simulated annealing (CSA)",
     long_description=LONG_DESCRIPTION,
