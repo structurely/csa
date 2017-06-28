@@ -5,7 +5,8 @@ build:
 
 clean:
 	find . | grep -E "(__pycache__|\.pyc|\.o|\.so|\.pyo$$)" | xargs rm -rf
-	rm -rf build
+	rm -rf build/
+	rm -rf dist/
 
 create-branch:
 	git checkout -b CSA-$(num) dev
