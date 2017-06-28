@@ -11,6 +11,8 @@ clean:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf pycsa.egg-info/
+	rm -rf .cache/
+	rm -rf examples/.ipynb_checkpoints/
 
 .PHONY: create-branch
 create-branch:
