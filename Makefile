@@ -21,6 +21,7 @@ force-delete:
 	git branch -D CSA-$(num)
 
 pypi-upload:
+	rm -rf dist/
 	python setup.py bdist_wheel
 	twine upload dist/*
 

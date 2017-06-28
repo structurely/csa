@@ -115,6 +115,7 @@ class CoupledAnnealer(object):
         pool.close()
         pool.join()
 
+        # Update the states and energies from each probe.
         for res in results:
             i, energy, probe = res
             self.probe_energies[i] = energy
@@ -192,6 +193,7 @@ class CoupledAnnealer(object):
         self.update_state()
         self.current_energies = self.probe_energies[:]
 
+        # Run for `steps` or until user interrupts.
         for k in xrange(1, self.steps + 1):
             self.update_state()
             self.step(k)
