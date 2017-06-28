@@ -115,6 +115,7 @@ class CoupledAnnealer(object):
         pool.close()
         pool.join()
 
+        # Update the states and energies from each probe.
         for res in results:
             i, energy, probe = res
             self.probe_energies[i] = energy
@@ -176,6 +177,15 @@ class CoupledAnnealer(object):
             print("Updated generation temp {:,.6f}".format(temps[1]))
             print()
 
+    def get_best(self):
+        """
+        Return the optimal state so far.
+        """
+        energy = min(self.current_energies)
+        index = self.current_energies.index(energy)
+        state = self.current_states[index]
+        return energy, state
+
     def anneal(self):
         """
         Run the CSA annealing process.
@@ -183,10 +193,11 @@ class CoupledAnnealer(object):
         self.update_state()
         self.current_energies = self.probe_energies[:]
 
+        # Run for `steps` or until user interrupts.
         for k in xrange(1, self.steps + 1):
             self.update_state()
             self.step(k)
-
+            
             if k % self.update_interval == 0 and self.verbose >= 1:
                 temps = (self.tacc, self.tgen)
                 self.status_check(k, min(self.current_energies), temps)

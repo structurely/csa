@@ -2,6 +2,7 @@ Coupled simulated annealing
 ===========================
 
 |Build Status|
+|PyPI|
 
 The original paper describing Coupled Simulated Annealing (CSA) can be
 found here:
@@ -153,3 +154,6 @@ The algorithm
 
 .. |Build Status| image:: https://travis-ci.org/structurely/csa.svg?branch=dev
    :target: https://travis-ci.org/structurely/csa
+
+.. |PyPI| image:: https://badge.fury.io/py/pycsa.svg
+    :target: https://badge.fury.io/py/pycsa
