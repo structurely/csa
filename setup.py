@@ -1,11 +1,14 @@
-from distutils.core import setup, Extension
+from distutils.core import Extension
 from Cython.Build import cythonize
-import numpy as np
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils import setup
 
 setup(
     name = "csa",
     packages=["csa"],
     package_dir={"csa": "csa"},
-    ext_modules = cythonize("csa/cost_eval.pyx"),
-    include_dirs=[np.get_include()],
+    #  ext_modules = cythonize("csa/cost_eval.pyx"),
+    #  include_dirs=[],
 )
