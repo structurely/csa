@@ -18,6 +18,7 @@ from __future__ import print_function
 import sys; sys.path.append('..')
 import math
 import random
+import time
 
 from csa.algorithm import CoupledAnnealer
 
@@ -95,7 +96,7 @@ def target(positions):
         e += distance_matrix[positions[i-1]][positions[i]]
     return e
 
-
+start_time = time.time()
 annealer = CoupledAnnealer(target, probe, 
                            initial_state=init_state,
                            steps=100)
@@ -113,3 +114,5 @@ while state[0] != 'New York City':
 print("%i mile route:" % energy)
 for city in state:
     print("\t", city)
+    
+print("time of execution: ",time.time()-start_time)
