@@ -29,7 +29,7 @@ Directly from ``GitHub``:
 
 ::
 
-    pip install -e git+https://github.com/structurely/csa.git
+    pip install git+https://github.com/structurely/csa.git
 
 Usage
 -----
