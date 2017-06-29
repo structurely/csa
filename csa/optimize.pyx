@@ -13,29 +13,32 @@ try:
 except NameError:
     xrange = range
 
-# cdef array.array exp_terms
-# cdef array.array exp_terms2
-# cdef array.array current_energies
-# cdef array.array current_states
-
 
 def calculate_exp(int n_probes,
                   current_energies,
                   cool,
                   double tacc,
                   double max_energy):
-
+    cdef array.array exp_terms = array.array('d', [])
+    cdef array.array exp_terms2 = array.array('d', [])
     for i in xrange(n_probes):
         E = current_energies[i]
         exp_term = math.exp((E - max_energy) / tacc)
-        exp_terms[i] = exp_term
+        exp_terms.append(exp_term)
         if cool:
             exp_term = math.exp(2.0 * (E - max_energy) / tacc)
-            exp_terms2[i] = exp_term
+            exp_terms2.append(exp_term)
+    exp_terms.tolist()
+    exp_terms2.tolist()
     return exp_terms, exp_terms2
 
 
-def accept_probe(int n_probes, current_energies, probe_energies, probe_states, prob_accept):
+def accept_probe(int n_probes,
+                 current_energies,
+                 current_states,
+                 probe_energies,
+                 probe_states,
+                 prob_accept):
     for i in xrange(n_probes):
         state_energy = current_energies[i]
         probe_energy = probe_energies[i]
