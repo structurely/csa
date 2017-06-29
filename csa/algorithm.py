@@ -5,9 +5,7 @@ from __future__ import print_function
 import math
 import multiprocessing as mp
 import random
-import pyximport
-pyximport.install()
-from .optimize import *
+
 
 try:
     xrange
@@ -15,47 +13,58 @@ except NameError:
     xrange = range
 
 
-def worker_probe(annealer, i):
-    state = annealer.current_states[i]
-    probe = annealer.probe_function(state)
-    energy = annealer.target_function(probe)
-    return i, energy, probe
-    #  annealer.queue.put((i, energy, probe))
-
-
-def listener(annealer):
-    while True:
-        res = annealer.queue.get()
-        if res == '__kill__':
-            break
-        i, energy, probe = res
-        annealer.probe_energies[i] = energy
-        annealer.probe_states[i] = probe
-        print(annealer.probe_energies)
-
-
 class CoupledAnnealer(object):
+    """
+    Interface for performing coupled simulated annealing.
+    ::Parameters
+      - target_function: a function which outputs a float.
+      - probe_function: a function which will randomly "probe" out from the
+        current state, i.e. it will randomly adjust the input parameters
+        for the `target_function`.
+      - n_annealers: an integer. The number of annealing processes to run.
+      - initial_state: a list of objects of length `n_probes`. This is used
+        to set the initial values of the input parameters for `target_function`
+        for all `n_probes` annealing processes.
+      - steps: an integer. The total number of annealing steps.
+      - update_interval: an integer. Specifies how many steps in between
+        updates to the generation and acceptance temperatures.
+      - tgen_initial: a float. The initial value of the generation temperature.
+      - tgen_schedule: a float. Determines the factor that tgen is multiplied by
+        during each update.
+      - tacc_initial: a float. The initial value of the acceptance temperature.
+      - tacc_schedule: a float. Determines the factor that tacc is multiplied by
+        during each update.
+      - desired_variance: a float. The desired variance of the acceptance
+        probabilities. If not specified, `desired_variance` will be set to
+        0.99 * (max variance) = 0.99 * (m - 1) / (m^2), where m is the number
+        of annealing processes.
+      - verbose: an integer. Set verbose=2, 1, or 0 depending on how much output
+        you wish to see (2 being the most, 0 being no output).
+      - processes: an integer. The number of parallel processes. Defaults to the
+        number of available CPUs. Note that this is different from the
+        `n_annealers`. If `target_function` is costly to compute, it might make
+        sense to set `n_annealers` = `processes` = max number of CPUs.
+    """
 
     def __init__(self, target_function, probe_function,
-                 initial_state=None,
-                 initial_states=[],
+                 n_annealers=10,
+                 initial_state=[],
                  steps=100000,
                  update_interval=5,
                  tgen_initial=0.01,
                  tgen_schedule=0.99999,
                  tacc_initial=0.9,
-                 tacc_schedule=0.99,
+                 tacc_schedule=0.95,
                  desired_variance=None,
-                 n_probes=10,
+                 verbose=1,
                  processes=-1):
         self.target_function = target_function
         self.probe_function = probe_function
-        self.initial_state = initial_state
-        self.initial_states = initial_states
         self.steps = steps
-        self.n_probes = n_probes
+        self.m = n_annealers
         self.processes = processes if processes > 0 else mp.cpu_count()
         self.update_interval = update_interval
+        self.verbose = verbose
         self.tgen = tgen_initial
         self.tacc = tacc_initial
         self.tgen_schedule = tgen_schedule
@@ -63,46 +72,46 @@ class CoupledAnnealer(object):
 
         # Set desired_variance.
         if desired_variance is None:
-            desired_variance = 0.99 * (n_probes - 1) / (n_probes ** 2)
+            desired_variance = 0.99 * (self.m - 1) / (self.m ** 2)
         self.desired_variance = desired_variance
 
         # Initialize state.
-        if initial_state is None:
-            assert len(initial_states) == self.n_probes
-            self.probe_states = initial_states
-        else:
-            self.probe_states = [initial_state] * n_probes
+        assert len(initial_state) == self.m
+        self.probe_states = initial_state
 
         # Shallow copy.
         self.current_states = self.probe_states[:]
 
         # Initialize energies.
-        self.probe_energies = self.current_energies = [None] * n_probes
-
-        # Set up mp queue.
-        manager = mp.Manager()
-        self.queue = manager.Queue()
+        self.probe_energies = self.current_energies = [None] * self.m
 
     def update_state(self):
+        """
+        Update the current state across all annealers in parallel.
+        """
         # Set up the mp pool.
         pool = mp.Pool(processes=self.processes)
 
-        # Put the listener to work first.
-        #  watcher = pool.apply_async(listener, args=(self,))
-
-        # Now put the workers to work.
+        # Put the workers to work.
         results = []
-        for i in xrange(self.n_probes):
-            pool.apply_async(worker_probe, args=(self, i,), callback=lambda x: results.append(x))
+        for i in xrange(self.m):
+            pool.apply_async(worker_probe, args=(self, i,),
+                             callback=lambda x: results.append(x))
+
+        # Gather the results from the workers.
         pool.close()
         pool.join()
 
+        # Update the states and energies from each probe.
         for res in results:
             i, energy, probe = res
             self.probe_energies[i] = energy
             self.probe_states[i] = probe
 
     def step(self, k):
+        """
+        Perform one entire step of the CSA algorithm.
+        """
         cool = True if k % self.update_interval == 0 else False
 
         max_energy = max(self.current_energies)
@@ -118,22 +127,64 @@ class CoupledAnnealer(object):
 
         # Determine whether to accept or reject probe.
         current_energies, current_states = accept_probe(self.n_probes, self.current_energies, self.current_states, self.probe_energies, self.probe_states, prob_accept)
+
         # Update temperatures according to schedule.
         if cool:
             # Update generation temp.
             self.tgen = self.tgen * self.tgen_schedule
+
             # Update acceptance temp.
-            sigma2 = (self.n_probes * sum(exp_terms2) / (gamma ** 2) - 1)
-            sigma2 = sigma2 / (self.n_probes ** 2)
+            sigma2 = (self.m * sum(exp_terms2) / (gamma ** 2) - 1)
+            sigma2 = sigma2 / (self.m ** 2)
             if sigma2 < self.desired_variance:
                 self.tacc *= self.tacc_schedule
             else:
                 self.tacc *= (2 - self.tacc_schedule)
 
+    def status_check(self, k, energy, temps=None):
+        """
+        Print updates to the user. Everybody is happy.
+        """
+        print("Step {:6d}, Energy {:,.4f}".format(k, energy))
+        if temps:
+            print("Updated acceptance temp {:,.6f}".format(temps[0]))
+            print("Updated generation temp {:,.6f}".format(temps[1]))
+            print()
+
+    def get_best(self):
+        """
+        Return the optimal state so far.
+        """
+        energy = min(self.current_energies)
+        index = self.current_energies.index(energy)
+        state = self.current_states[index]
+        return energy, state
+
     def anneal(self):
+        """
+        Run the CSA annealing process.
+        """
         self.update_state()
         self.current_energies = self.probe_energies[:]
+
+        # Run for `steps` or until user interrupts.
         for k in xrange(1, self.steps + 1):
             self.update_state()
             self.step(k)
-            print(min(self.current_energies))
+
+            if k % self.update_interval == 0 and self.verbose >= 1:
+                temps = (self.tacc, self.tgen)
+                self.status_check(k, min(self.current_energies), temps)
+            elif self.verbose >= 2:
+                self.status_check(k, min(self.current_energies))
+
+
+def worker_probe(annealer, i):
+    """
+    This is the function that will spread across different processes in
+    parallel to compute the current energy at each probe.
+    """
+    state = annealer.current_states[i]
+    probe = annealer.probe_function(state, annealer.tgen)
+    energy = annealer.target_function(probe)
+    return i, energy, probe
