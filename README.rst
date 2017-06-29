@@ -4,6 +4,9 @@ Coupled simulated annealing
 |Build Status|
 |PyPI|
 
+Homepage
+`github.com/structurely/csa <https://github.com/structurely/csa>`__.
+
 The original paper describing Coupled Simulated Annealing (CSA) can be
 found here:
 
@@ -110,47 +113,47 @@ The algorithm
 
 1. **Initialization**
 
--  Assign random initial solutions to ``x_1``, ..., ``x_m``.
--  Let ``gamma = energy_func(my_function(x_1), ..., my_function(x_m))``.
--  Set ``tgen = default_tgen``.
--  Set ``tac = default_tac``.
--  Set the inner iteration index ``j = 0``.
--  Set the outer iteration index ``k = 0``.
+   -  Assign random initial solutions to ``x_1``, ..., ``x_m``.
+   -  Let ``gamma = energy_func(my_function(x_1), ..., my_function(x_m))``.
+   -  Set ``tgen = default_tgen``.
+   -  Set ``tac = default_tac``.
+   -  Set the inner iteration index ``j = 0``.
+   -  Set the outer iteration index ``k = 0``.
 
 2. **Generation**
 
--  For each ``i in (1, ..., m)``:
+   -  For each ``i in (1, ..., m)``:
 
-   -  Generate a "probing" solution ``y_i = x_i + e``, where ``e`` is
+      -  Generate a "probing" solution ``y_i = x_i + e``, where ``e`` is
       randomly generated from the function ``random_probe(i, tgen)``.
 
 3. **Acceptance**
 
--  For each ``i in (1, ..., m)``:
+   -  For each ``i in (1, ..., m)``:
 
-   -  If ``my_function(y_i) < my_function(x_i)``, set ``x_i = y_i``.
-   -  Else, set ``p = acceptance_prob(gamma, x_i, y_i)``. Then sample
+      -  If ``my_function(y_i) < my_function(x_i)``, set ``x_i = y_i``.
+      -  Else, set ``p = acceptance_prob(gamma, x_i, y_i)``. Then sample
       ``r`` from a uniform(0, 1) distribution and set ``x_i = y_i`` if
       ``r < p``, otherwise keep ``x_i = x_i``.
 
--  Now update
-   ``gamma = energy_func(my_function(x_1), ..., my_function(x_m))``.
--  Increment ``j += 1``.
--  If ``j < n``, go back to step 2, otherwise set ``j = 0`` and continue
-   to step 4.
+   -  Now update
+      ``gamma = energy_func(my_function(x_1), ..., my_function(x_m))``.
+   -  Increment ``j += 1``.
+   -  If ``j < n``, go back to step 2, otherwise set ``j = 0`` and continue
+      to step 4.
 
 4. **Cooling**
 
--  Decrease the "temperatures" ``tgen`` and ``tac`` according to their
-   respective schedules, i.e. we set
-   ``tgen = generation_schedule(tgen, k)`` and
-   ``tac = acceptance_schedule(tac, k)``.
--  Increment ``k += 1``.
+   -  Decrease the "temperatures" ``tgen`` and ``tac`` according to their
+      respective schedules, i.e. we set
+      ``tgen = generation_schedule(tgen, k)`` and
+      ``tac = acceptance_schedule(tac, k)``.
+   -  Increment ``k += 1``.
 
 5. **Stop**
 
--  Stop if the stopping criteria is met or if ``k >= N``. Otherwise
-   return to step 2.
+   -  Stop if the stopping criteria is met or if ``k >= N``. Otherwise
+      return to step 2.
 
 .. |Build Status| image:: https://travis-ci.org/structurely/csa.svg?branch=dev
    :target: https://travis-ci.org/structurely/csa
