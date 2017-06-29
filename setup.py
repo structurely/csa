@@ -7,6 +7,7 @@ except ImportError:
 ext_modules = [Extension("pycsa",
                          sources=["csa/optimize.pyx"],
                          libraries=["m"])]   
+
 setup(
     name="pycsa",
     version="0.1.2",
