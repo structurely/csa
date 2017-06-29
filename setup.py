@@ -1,13 +1,8 @@
-from Cython.Build import cythonize
 try:
-    from setuptools import setup,Extension
+    from setuptools import setup
 except ImportError:
-    from distutils.core import setup,Extension
+    from distutils.core import setup
     
-ext_modules = [Extension("pycsa",
-                         sources=["csa/optimize.pyx"],
-                         libraries=["m"])]   
-
 setup(
     name="pycsa",
     version="0.1.2",
@@ -18,7 +13,6 @@ setup(
     url="https://github.com/structurely/csa",
     packages=["pycsa"],
     package_dir={"pycsa": "csa"},
-    ext_modules=cythonize(ext_modules),
     keywords=[
         "csa",
         "sa",
