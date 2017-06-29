@@ -4,7 +4,7 @@
 # Orig Author:   Evan Pete Walsh
 # Contact:       epwalsh@structurely.com
 # Creation Date: 2017-06-28
-# Last Modified: 2017-06-28 17:27:43
+# Last Modified: 2017-06-29 10:51:05
 # =============================================================================
 
 """
@@ -54,6 +54,7 @@ def test_rosenbrock():
     annealer = CoupledAnnealer(
         rosenbrock,
         probe,
+        n_annealers=N_ANNEALERS,
         initial_state=initial_state,
         steps=STEPS,
         processes=4,

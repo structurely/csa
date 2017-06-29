@@ -4,7 +4,7 @@
 # Orig Author:   Evan Pete Walsh
 # Contact:       epwalsh@structurely.com
 # Creation Date: 2017-06-28
-# Last Modified: 2017-06-28 16:33:50
+# Last Modified: 2017-06-29 10:50:44
 # =============================================================================
 
 """
@@ -53,6 +53,7 @@ initial_state = [tuple((random.normalvariate(0, 5) for _ in xrange(DIMENSION)))
 annealer = CoupledAnnealer(
     rosenbrock,
     probe,
+    n_annealers=N_ANNEALERS,
     initial_state=initial_state,
     steps=STEPS,
     processes=4,
