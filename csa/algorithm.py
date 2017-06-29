@@ -16,44 +16,58 @@ except NameError:
 class CoupledAnnealer(object):
     """
     Interface for performing coupled simulated annealing.
+
     ::Parameters
+
       - target_function: a function which outputs a float.
-      - probe_function: a function which will randomly "probe" out from the
+
+      - probe_function: a function which will randomly "probe" out from the 
         current state, i.e. it will randomly adjust the input parameters
         for the `target_function`.
+
       - n_annealers: an integer. The number of annealing processes to run.
+
       - initial_state: a list of objects of length `n_probes`. This is used
         to set the initial values of the input parameters for `target_function`
         for all `n_probes` annealing processes.
+
       - steps: an integer. The total number of annealing steps.
-      - update_interval: an integer. Specifies how many steps in between
+
+      - update_interval: an integer. Specifies how many steps in between 
         updates to the generation and acceptance temperatures.
+
       - tgen_initial: a float. The initial value of the generation temperature.
+
       - tgen_schedule: a float. Determines the factor that tgen is multiplied by
         during each update.
+
       - tacc_initial: a float. The initial value of the acceptance temperature.
+
       - tacc_schedule: a float. Determines the factor that tacc is multiplied by
         during each update.
+
       - desired_variance: a float. The desired variance of the acceptance
-        probabilities. If not specified, `desired_variance` will be set to
+        probabilities. If not specified, `desired_variance` will be set to 
         0.99 * (max variance) = 0.99 * (m - 1) / (m^2), where m is the number
         of annealing processes.
+
       - verbose: an integer. Set verbose=2, 1, or 0 depending on how much output
         you wish to see (2 being the most, 0 being no output).
+
       - processes: an integer. The number of parallel processes. Defaults to the
-        number of available CPUs. Note that this is different from the
+        number of available CPUs. Note that this is different from the 
         `n_annealers`. If `target_function` is costly to compute, it might make
         sense to set `n_annealers` = `processes` = max number of CPUs.
     """
 
     def __init__(self, target_function, probe_function,
-                 n_annealers=10,
+                 n_annealers=10, 
                  initial_state=[],
                  steps=100000,
                  update_interval=5,
                  tgen_initial=0.01,
                  tgen_schedule=0.99999,
-                 tacc_initial=0.9,
+                 tacc_initial=0.9, 
                  tacc_schedule=0.95,
                  desired_variance=None,
                  verbose=1,
@@ -69,7 +83,7 @@ class CoupledAnnealer(object):
         self.tacc = tacc_initial
         self.tgen_schedule = tgen_schedule
         self.tacc_schedule = tacc_schedule
-
+        
         # Set desired_variance.
         if desired_variance is None:
             desired_variance = 0.99 * (self.m - 1) / (self.m ** 2)
@@ -95,7 +109,7 @@ class CoupledAnnealer(object):
         # Put the workers to work.
         results = []
         for i in xrange(self.m):
-            pool.apply_async(worker_probe, args=(self, i,),
+            pool.apply_async(worker_probe, args=(self, i,), 
                              callback=lambda x: results.append(x))
 
         # Gather the results from the workers.
@@ -134,7 +148,7 @@ class CoupledAnnealer(object):
             self.tgen = self.tgen * self.tgen_schedule
 
             # Update acceptance temp.
-            sigma2 = (self.m * sum(exp_terms2) / (gamma ** 2) - 1)
+            sigma2 = (self.m * sum(exp_terms2) / (gamma ** 2) - 1) 
             sigma2 = sigma2 / (self.m ** 2)
             if sigma2 < self.desired_variance:
                 self.tacc *= self.tacc_schedule
@@ -171,17 +185,17 @@ class CoupledAnnealer(object):
         for k in xrange(1, self.steps + 1):
             self.update_state()
             self.step(k)
-
+            
             if k % self.update_interval == 0 and self.verbose >= 1:
                 temps = (self.tacc, self.tgen)
                 self.status_check(k, min(self.current_energies), temps)
             elif self.verbose >= 2:
-                self.status_check(k, min(self.current_energies))
+                self.status_check(k , min(self.current_energies))
 
 
 def worker_probe(annealer, i):
     """
-    This is the function that will spread across different processes in
+    This is the function that will spread across different processes in 
     parallel to compute the current energy at each probe.
     """
     state = annealer.current_states[i]
