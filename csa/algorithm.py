@@ -134,26 +134,13 @@ class CoupledAnnealer(object):
         if cool:
             exp_terms2 = []
 
-        for i in xrange(self.m):
-            E = self.current_energies[i]
-            exp_terms.append(math.exp((E - max_energy) / self.tacc))
-
-            # No need to calculate this if we are not cooling this step.
-            if cool:
-                exp_terms2.append(math.exp(2.0 * (E - max_energy) / self.tacc))
+        exp_terms, exp_terms2 = calculate_exp(self.n_probes, self.current_energies, cool, self.tacc, max_energy)
 
         gamma = sum(exp_terms)
         prob_accept = [x / gamma for x in exp_terms]
 
         # Determine whether to accept or reject probe.
-        for i in xrange(self.m):
-            state_energy = self.current_energies[i]
-            probe_energy = self.probe_energies[i]
-            probe = self.probe_states[i]
-            p = prob_accept[i]
-            if (probe_energy < state_energy) or (random.uniform(0, 1) < p):
-                self.current_energies[i] = probe_energy
-                self.current_states[i] = probe
+        current_energies, current_states = accept_probe(self.n_probes, self.current_energies, self.current_states, self.probe_energies, self.probe_states, prob_accept)
 
         # Update temperatures according to schedule.
         if cool:
