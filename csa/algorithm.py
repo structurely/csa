@@ -1,4 +1,6 @@
 """
+.. module:: algorithm
+
 Main implementation of the coupled simulated annealing algorithm (CSA).
 
 This modules makes use of the Python multiprocessing library in order to run

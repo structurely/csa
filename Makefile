@@ -1,9 +1,23 @@
-status=dev
+status = dev
 OBJS = $(wildcard csa/*.py)
+VERSION = `cat setup.py | grep version | sed 's/^.*version="\(.*\)".*$$/\1/g'`
 
 .PHONY: build
 build: $(OBJS)
 	python setup.py install
+
+.PHONY: build-docs
+build-docs: 
+	cd docs && make html
+
+.PHONY: deploy-docs
+deploy-docs:
+	@echo "Deploying docs version $(VERSION) to S3"
+	aws s3 cp docs/build/html/ s3://structurely-docs/pycsa/v$(VERSION)/ --recursive 
+
+.PHONY: version
+version:
+	@echo $(VERSION)
 
 .PHONY: clean
 clean:
@@ -43,6 +57,12 @@ help:
 	@echo ""
 	@echo "    build"
 	@echo "        Build module and install locally."
+	@echo ""
+	@echo "    build-docs"
+	@echo "        Build module docs using Sphinx."
+	@echo ""
+	@echo "    deploy-docs"
+	@echo "        Deploy docs to S3."
 	@echo ""
 	@echo "    create-branch"
 	@echo "        Create new branch off of dev and push to GitHub."

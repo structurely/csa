@@ -1,7 +1,7 @@
-csa
-===
+pycsa
+=====
 
 .. toctree::
    :maxdepth: 4
 
-   csa
+   pycsa
