@@ -4,10 +4,12 @@ Coupled simulated annealing
 |Build Status|
 |PyPI|
 
+**Homepage:**
+`github.com/structurely/csa <https://github.com/structurely/csa>`__.
+
 Coupled simulated annealing (CSA) is a generalization of simulated annealing (SA),
 which is an optimization algorithm that doesn't use any information about the derivates
-of a function. The original paper describing CSA can be
-found here:
+of a function. The original paper describing CSA can be found here:
 
 ftp://ftp.esat.kuleuven.be/sista/sdesouza/papers/CSA2009accepted.pdf
 
@@ -44,7 +46,10 @@ for an example of CSA applied to the `travelling salesman problem
 Contributing
 ------------
 
-Feel free to submit pull requests and issues.
+Feel free to submit issues at
+`github.com/structurely/csa/issues <https://github.com/structurely/csa/issues>`__
+and pull requests to the dev branch:
+`github.com/structurely/csa/tree/dev <https://github.com/structurely/csa/tree/dev>`__.
 
 License
 -------
@@ -59,6 +64,7 @@ Related
    Python implementation of (single) simulated annealing.
 -  `docs.scipy.org <https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.optimize.anneal.html>`__:
    the SciPy implementation of simulated annealing.
+
 
 .. |Build Status| image:: https://travis-ci.org/structurely/csa.svg?branch=dev
    :target: https://travis-ci.org/structurely/csa
