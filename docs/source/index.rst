@@ -8,6 +8,8 @@ Welcome to pycsa's documentation!
 
 .. include:: ../../README.rst
 
+.. include:: ./csa_algorithm.rst
+
 Module Reference
 ================
 

@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pycsa'
-copyright = u'2017, Evan \'Pete\' Walsh, Boudhayan Banerjee'
+copyright = u'Reinform Inc'
 author = u'Evan \'Pete\' Walsh, Boudhayan Banerjee'
 
 # The version info for the project you're documenting, acts as replacement for
