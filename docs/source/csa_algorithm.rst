@@ -87,9 +87,3 @@ The algorithm
 
 -  Stop if the stopping criteria is met or if :math:`k >= N`. Otherwise
    return to step 2.
-
-.. |Build Status| image:: https://travis-ci.org/structurely/csa.svg?branch=dev
-   :target: https://travis-ci.org/structurely/csa
-
-.. |PyPI| image:: https://badge.fury.io/py/pycsa.svg
-    :target: https://badge.fury.io/py/pycsa

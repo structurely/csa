@@ -59,3 +59,9 @@ Related
    Python implementation of (single) simulated annealing.
 -  `docs.scipy.org <https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.optimize.anneal.html>`__:
    the SciPy implementation of simulated annealing.
+
+.. |Build Status| image:: https://travis-ci.org/structurely/csa.svg?branch=dev
+   :target: https://travis-ci.org/structurely/csa
+
+.. |PyPI| image:: https://badge.fury.io/py/pycsa.svg
+    :target: https://badge.fury.io/py/pycsa
