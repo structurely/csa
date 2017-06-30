@@ -1,3 +1,12 @@
+"""
+.. module:: algorithm
+
+Main implementation of the coupled simulated annealing algorithm (CSA).
+
+This modules makes use of the Python multiprocessing library in order to run
+the annealing processes in parallel.
+"""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -17,47 +26,60 @@ class CoupledAnnealer(object):
     """
     Interface for performing coupled simulated annealing.
 
-    ::Parameters
+    **Parameters**:
 
-      - target_function: a function which outputs a float.
+      - target_function: function
+            A function which outputs a float.
 
-      - probe_function: a function which will randomly "probe" out from the 
-        current state, i.e. it will randomly adjust the input parameters
-        for the `target_function`.
+      - probe_function: function 
+            a function which will randomly "probe" 
+            out from the current state, i.e. it will randomly adjust the input 
+            parameters for the `target_function`.
 
-      - n_annealers: an integer. The number of annealing processes to run.
+      - n_annealers: int
+            The number of annealing processes to run.
 
-      - initial_state: a list of objects of length `n_probes`. This is used
-        to set the initial values of the input parameters for `target_function`
-        for all `n_probes` annealing processes.
+      - initial_state: list
+            A list of objects of length `n_probes`. 
+            This is used to set the initial values of the input parameters for 
+            `target_function` for all `n_probes` annealing processes.
 
-      - steps: an integer. The total number of annealing steps.
+      - steps: int
+            The total number of annealing steps.
 
-      - update_interval: an integer. Specifies how many steps in between 
-        updates to the generation and acceptance temperatures.
+      - update_interval: int 
+            Specifies how many steps in between updates 
+            to the generation and acceptance temperatures.
 
-      - tgen_initial: a float. The initial value of the generation temperature.
+      - tgen_initial: float 
+            The initial value of the generation temperature.
 
-      - tgen_schedule: a float. Determines the factor that tgen is multiplied by
-        during each update.
+      - tgen_schedule: float 
+            Determines the factor that tgen is multiplied by during each update.
 
-      - tacc_initial: a float. The initial value of the acceptance temperature.
+      - tacc_initial: float 
+            The initial value of the acceptance temperature.
 
-      - tacc_schedule: a float. Determines the factor that tacc is multiplied by
-        during each update.
+      - tacc_schedule: float 
+            Determines the factor that `tacc` is multiplied by during each update.
 
-      - desired_variance: a float. The desired variance of the acceptance
-        probabilities. If not specified, `desired_variance` will be set to 
-        0.99 * (max variance) = 0.99 * (m - 1) / (m^2), where m is the number
-        of annealing processes.
+      - desired_variance: float 
+            The desired variance of the acceptance probabilities. If not specified, 
+            `desired_variance` will be set to 
 
-      - verbose: an integer. Set verbose=2, 1, or 0 depending on how much output
-        you wish to see (2 being the most, 0 being no output).
+            :math:`0.99 * (\\text{max variance}) = 0.99 * \\frac{(m - 1)}{m^2}`,
 
-      - processes: an integer. The number of parallel processes. Defaults to the
-        number of available CPUs. Note that this is different from the 
-        `n_annealers`. If `target_function` is costly to compute, it might make
-        sense to set `n_annealers` = `processes` = max number of CPUs.
+            where m is the number of annealing processes.
+
+      - verbose: int 
+            Set verbose=2, 1, or 0 depending on how much output you wish to see 
+            (2 being the most, 0 being no output).
+
+      - processes: int 
+            The number of parallel processes. Defaults to the
+            number of available CPUs. Note that this is different from the 
+            `n_annealers`. If `target_function` is costly to compute, it might 
+            make sense to set `n_annealers` = `processes` = max number of CPUs.
     """
 
     def __init__(self, target_function, probe_function,
@@ -99,7 +121,7 @@ class CoupledAnnealer(object):
         # Initialize energies.
         self.probe_energies = self.current_energies = [None] * self.m
 
-    def update_state(self):
+    def __update_state(self):
         """
         Update the current state across all annealers in parallel.
         """
@@ -122,7 +144,7 @@ class CoupledAnnealer(object):
             self.probe_energies[i] = energy
             self.probe_states[i] = probe
 
-    def step(self, k):
+    def __step(self, k):
         """
         Perform one entire step of the CSA algorithm.
         """
@@ -168,7 +190,7 @@ class CoupledAnnealer(object):
             else:
                 self.tacc *= (2 - self.tacc_schedule)
 
-    def status_check(self, k, energy, temps=None):
+    def __status_check(self, k, energy, temps=None):
         """
         Print updates to the user. Everybody is happy.
         """
@@ -191,19 +213,19 @@ class CoupledAnnealer(object):
         """
         Run the CSA annealing process.
         """
-        self.update_state()
+        self.__update_state()
         self.current_energies = self.probe_energies[:]
 
         # Run for `steps` or until user interrupts.
         for k in xrange(1, self.steps + 1):
-            self.update_state()
-            self.step(k)
+            self.__update_state()
+            self.__step(k)
             
             if k % self.update_interval == 0 and self.verbose >= 1:
                 temps = (self.tacc, self.tgen)
-                self.status_check(k, min(self.current_energies), temps)
+                self.__status_check(k, min(self.current_energies), temps)
             elif self.verbose >= 2:
-                self.status_check(k , min(self.current_energies))
+                self.__status_check(k , min(self.current_energies))
 
 
 def worker_probe(annealer, i):
