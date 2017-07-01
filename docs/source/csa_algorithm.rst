@@ -2,7 +2,7 @@ Description of CSA
 ------------------
 
 Suppose we are trying optimize (meaning minimize, in this case) some
-function :math:`E` which takes :math:`x` as input and outputs a
+function :math:`f` which takes :math:`x` as input and outputs a
 real number.
 
 We are going to run :math:`m` processes in parallel. Therefore :math:`x_i` will
@@ -30,7 +30,7 @@ functions and parameters:
    iteration :math:`k` as input. This function determines how much :math:`T_{acc}` will be
    decreased (or sometimes increased) at each iteration. 
 -  :math:`T_{acc}^{(0)}` is the initial value given to :math:`T_{acc}`.
--  :math:`g(\epsilon, T_{gen})` is a probability distribution function for :math:`\epsilon`
+-  :math:`g(\epsilon | T_{gen})` is a probability distribution function for :math:`\epsilon`
    which depends on :math:`T_{gen}`.
 -  :math:`A(T_{acc}, \gamma, x_i, y_i)` is a function that
    outputs a number between 0 and 1, which represents the acceptance probability.
@@ -48,7 +48,7 @@ The algorithm
 1. **Initialization**
 
 -  Assign random initial solutions to :math:`x_1`, ..., :math:`x_m`.
--  Let :math:`\gamma_0 = \gamma(f(x_1), ..., f(x_m))`.
+-  Let :math:`\gamma_0 := \gamma(f(x_1), ..., f(x_m))`.
 -  Set the inner iteration index :math:`j = 0`.
 -  Set the outer iteration index :math:`k = 0`.
 
@@ -58,7 +58,7 @@ The algorithm
 
    -  Generate a "probing" solution :math:`y_i := x_i + \epsilon`, where 
       :math:`\epsilon` is randomly generated from the distribution
-      :math:`g(\epsilon, T_{gen}^{(0)})`.
+      :math:`g(\epsilon | T_{gen}^{(0)})`.
 
 3. **Acceptance**
 
@@ -79,8 +79,8 @@ The algorithm
 
 -  Decrease the generation and acceptance "temperatures" 
    for the next iterations according to their respective schedules, i.e. set
-   :math:`T_{gen}^{(k+1)} = U(T_{gen}^{(k)}, k)` and
-   :math:`T_{acc}^{(k+1)} = V(T_{acc}^{(k)}, k)`.
+   :math:`T_{gen}^{(k+1)} := U(T_{gen}^{(k)}, k)` and
+   :math:`T_{acc}^{(k+1)} := V(T_{acc}^{(k)}, k)`.
 -  Increment :math:`k` by 1.
 
 5. **Stop**
