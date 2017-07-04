@@ -18,7 +18,7 @@ independent SA processes run in parallel), except that the acceptance
 probability at each step is calculated as a function of the current
 state across *all* ``m`` processes. For a more complete description of
 the general CSA algorithm, see 
-`Description of CSA <https://docs.structurely.com/pycsa/v0.1.2/#description-of-csa>`__.
+`Description of CSA <https://docs.structurely.com/pycsa/v0.1.3/#description-of-csa>`__.
 
 Installation
 ------------

@@ -19,6 +19,13 @@ deploy-docs:
 version:
 	@echo $(VERSION)
 
+.PHONY: bump-version
+bump-version:
+	@echo "Bumbing from $(VERSION) to $(new)"
+	sed -i 's/version="[0-9\.]\+"/version="$(new)"/' setup.py
+	sed -i 's:pycsa/v[0-9\.]\+/:pycsa/v$(new)/:' README.rst
+	sed -i 's/^\(version\|release\) = u"[0-9\.]\+"/\1 = u"$(new)"/g' docs/source/conf.py
+
 .PHONY: clean
 clean:
 	find . | grep -E "(__pycache__|\.pyc|\.o|\.so|\.pyo$$)" | xargs rm -rf
