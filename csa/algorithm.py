@@ -12,6 +12,7 @@ from __future__ import print_function
 import math
 import multiprocessing as mp
 import random
+import time
 
 
 try:
@@ -74,10 +75,15 @@ class CoupledAnnealer(object):
             (2 being the most, 0 being no output).
 
       - processes: int 
-            The number of parallel processes. Defaults to the
+            The number of parallel processes. Defaults to a single process.
+            If `processes` <= 0, then the number of processes will be set to the
             number of available CPUs. Note that this is different from the 
             `n_annealers`. If `target_function` is costly to compute, it might 
             make sense to set `n_annealers` = `processes` = max number of CPUs.
+
+            On the other hand, if `target_function` is easy to compute, then the
+            CSA process will likely run a LOT faster with a single process due 
+            to the overhead of using multiple processes.
     """
 
     def __init__(self, target_function, probe_function,
@@ -91,7 +97,7 @@ class CoupledAnnealer(object):
                  tacc_schedule=0.95,
                  desired_variance=None,
                  verbose=1,
-                 processes=-1):
+                 processes=1):
         self.target_function = target_function
         self.probe_function = probe_function
         self.steps = steps
@@ -142,6 +148,15 @@ class CoupledAnnealer(object):
             self.probe_energies[i] = energy
             self.probe_states[i] = probe
 
+    def __update_state_no_par(self):
+        """
+        Update the current state across all annealers sequentially.
+        """
+        for i in xrange(self.m):
+            i, energy, probe = worker_probe(self, i)
+            self.probe_energies[i] = energy
+            self.probe_states[i] = probe
+
     def __step(self, k):
         """
         Perform one entire step of the CSA algorithm.
@@ -188,11 +203,16 @@ class CoupledAnnealer(object):
             else:
                 self.tacc *= (2 - self.tacc_schedule)
 
-    def __status_check(self, k, energy, temps=None):
+    def __status_check(self, k, energy, temps=None, start_time=None):
         """
         Print updates to the user. Everybody is happy.
         """
-        print("Step {:6d}, Energy {:,.4f}".format(k, energy))
+        if start_time:
+            elapsed = time.time() - start_time
+            print("Step {:6d}, Energy {:,.4f}, Elapsed time {:,.2f} secs"
+                  .format(k, energy, elapsed))
+        else:
+            print("Step {:6d}, Energy {:,.4f}".format(k, energy))
         if temps:
             print("Updated acceptance temp {:,.6f}".format(temps[0]))
             print("Updated generation temp {:,.6f}".format(temps[1]))
@@ -211,17 +231,26 @@ class CoupledAnnealer(object):
         """
         Run the CSA annealing process.
         """
-        self.__update_state()
+        start_time = time.time()
+
+        if self.processes > 1:
+            update_func = self.__update_state
+        else:
+            update_func = self.__update_state_no_par
+
+        update_func()
         self.current_energies = self.probe_energies[:]
 
         # Run for `steps` or until user interrupts.
         for k in xrange(1, self.steps + 1):
-            self.__update_state()
+            update_func()
             self.__step(k)
             
             if k % self.update_interval == 0 and self.verbose >= 1:
                 temps = (self.tacc, self.tgen)
-                self.__status_check(k, min(self.current_energies), temps)
+                self.__status_check(k, min(self.current_energies), 
+                                    temps=temps, 
+                                    start_time=start_time)
             elif self.verbose >= 2:
                 self.__status_check(k , min(self.current_energies))
 
