@@ -4,7 +4,7 @@
 # Orig Author:   Evan Pete Walsh
 # Contact:       epwalsh@structurely.com
 # Creation Date: 2017-06-28
-# Last Modified: 2017-06-29 10:51:05
+# Last Modified: 2017-07-03 20:41:33
 # =============================================================================
 
 """
@@ -47,7 +47,7 @@ def probe(solution, tgen):
     return probe_solution
 
 
-def test_rosenbrock():
+def test_rosenbrock_parallel():
     initial_state = [tuple((random.normalvariate(0, 5) for _ in xrange(DIMENSION)))
                      for x in xrange(N_ANNEALERS)]
     
@@ -57,7 +57,27 @@ def test_rosenbrock():
         n_annealers=N_ANNEALERS,
         initial_state=initial_state,
         steps=STEPS,
-        processes=4,
+        processes=-1,
+        verbose=1,
+    )
+    
+    annealer.anneal()
+    energy, state = annealer.get_best()
+    
+    assert len(state) == DIMENSION
+
+
+def test_rosenbrock_sequential():
+    initial_state = [tuple((random.normalvariate(0, 5) for _ in xrange(DIMENSION)))
+                     for x in xrange(N_ANNEALERS)]
+    
+    annealer = CoupledAnnealer(
+        rosenbrock,
+        probe,
+        n_annealers=N_ANNEALERS,
+        initial_state=initial_state,
+        steps=STEPS,
+        processes=1,
         verbose=1,
     )
     

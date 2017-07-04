@@ -4,7 +4,7 @@
 # Orig Author:   Evan Pete Walsh
 # Contact:       epwalsh@structurely.com
 # Creation Date: 2017-06-28
-# Last Modified: 2017-06-29 10:50:44
+# Last Modified: 2017-07-03 20:44:25
 # =============================================================================
 
 """
@@ -56,7 +56,7 @@ annealer = CoupledAnnealer(
     n_annealers=N_ANNEALERS,
     initial_state=initial_state,
     steps=STEPS,
-    processes=4,
+    processes=1,
     verbose=1,
 )
 
